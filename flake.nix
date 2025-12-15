@@ -13,10 +13,35 @@
       in
       {
         defaultPackage = naersk-lib.buildPackage ./.;
-        devShell = with pkgs; mkShell {
-          buildInputs = [ cargo rustc rustfmt pre-commit rustPackages.clippy ];
-          RUST_SRC_PATH = rustPlatform.rustLibSrc;
-        };
+        devShell =
+          let runtimeDeps = with pkgs;[ libxkbcommon vulkan-loader ];
+          in
+          with pkgs; mkShell {
+            buildInputs = [
+              # rust packages
+              cargo
+              cargo-binutils
+              cargo-llvm-cov
+              rustc
+              rustfmt
+              rustPackages.clippy
+              rust-analyzer
+              # replace rust linker with lld
+              lld
+              clang
+              # system libs and binaries
+              wayland
+              udev
+              alsa-lib
+              pkg-config
+              # utilities
+              pre-commit
+            ] ++ runtimeDeps;
+            RUST_SRC_PATH = rustPlatform.rustLibSrc;
+            shellHook = ''
+              LD_LIBRARY_PATH=${lib.makeLibraryPath runtimeDeps}
+            '';
+          };
       }
     );
 }
