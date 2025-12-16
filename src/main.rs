@@ -1,27 +1,18 @@
 use bevy::prelude::*;
 
+mod player;
+
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
-        .add_systems(Startup, setup)
+        .insert_resource(ClearColor(Color::WHITE))
+        .add_plugins(DefaultPlugins.set(AssetPlugin {
+            file_path: "assets".into(),
+            ..default()
+        }))
+        .add_systems(Startup, setup_camera)
         .run();
 }
 
-#[derive(Component)]
-struct Player;
-
-fn setup(mut commands: Commands) {
+fn setup_camera(mut commands: Commands) {
     commands.spawn(Camera2d);
-
-    commands.spawn((
-        Text2d::new("@"),
-        TextFont {
-            font_size: 12.0,
-            font: default(),
-            ..default()
-        },
-        TextColor(Color::WHITE),
-        Transform::from_translation(Vec3::ZERO),
-        Player,
-    ));
 }
