@@ -14,11 +14,9 @@
       {
         defaultPackage = naersk-lib.buildPackage ./.;
         devShell =
-          let runtimeDeps = with pkgs;[ libxkbcommon vulkan-loader ];
-          in
-          with pkgs; mkShell {
-            buildInputs = [
-              # rust packages
+          let
+            runtimeDeps = with pkgs;[ libxkbcommon vulkan-loader ];
+            rustDeps = with pkgs; [
               cargo
               cargo-binutils
               cargo-llvm-cov
@@ -26,17 +24,22 @@
               rustfmt
               rustPackages.clippy
               rust-analyzer
-              # replace rust linker with lld
-              lld
-              clang
-              # system libs and binaries
+            ];
+            sysDeps = with pkgs; [
               wayland
               udev
               alsa-lib
               pkg-config
+            ];
+          in
+          with pkgs; mkShell {
+            buildInputs = [
+              # replace rust linker with lld
+              lld
+              clang
               # utilities
               pre-commit
-            ] ++ runtimeDeps;
+            ] ++ sysDeps ++ rustDeps ++ runtimeDeps;
             RUST_SRC_PATH = rustPlatform.rustLibSrc;
             shellHook = ''
               LD_LIBRARY_PATH=${lib.makeLibraryPath runtimeDeps}

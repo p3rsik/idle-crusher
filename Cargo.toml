@@ -20,3 +20,4 @@ opt-level = 3
 
 [dependencies]
 bevy = { version = "0.17", features = ["dynamic_linking"] }
+avian2d = "0.4"
