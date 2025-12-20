@@ -1,3 +1,4 @@
+use crate::player::PlayerPlugin;
 use bevy::prelude::*;
 
 mod player;
@@ -10,6 +11,7 @@ fn main() {
             ..default()
         }))
         .add_systems(Startup, setup_camera)
+        .add_plugins(PlayerPlugin)
         .run();
 }
 
